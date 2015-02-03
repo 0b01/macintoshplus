@@ -1,8 +1,8 @@
 # encoding: utf-8
 """Vaporwaveは音楽のジャンルや芸術運動である[3] [4]このようなバウンスハウス、またはchillwave、そして、より広く、エレクトロニックダンスミュージック、などのインディーseapunkから2010年代初頭のダンスのジャンルに出現した。 、その態度やメッセージに多くの多様性と曖昧さ、vaporwaveがありますが：時々の両方が、大量消費社会の批判とパロディとして機能し80年代のヤッピー文化、[5]とニューエイジの音楽、音響的および審美的に彼らのノスタルジックで好奇心の魅力を紹介しながら、アーティファクト。"""
 from PIL import Image, ImageDraw, ImageFont, ImageEnhance, ImageFilter
-from random import randint, choice
-import os
+from random import randint, choice, Random
+import os, hashlib
 from math import sin, cos, tan
 
 japanese_corpus = u'''それは20年前の今日だった
@@ -37,17 +37,14 @@ backgrounds = ['img/png/background/' + i for i in os.listdir('img/png/background
 pics = ['img/png/pics/' + i for i in os.listdir('img/png/pics/') if i != 'Thumbs.db']
 greek = ['img/png/greek/' + i for i in os.listdir('img/png/greek/') if i != 'Thumbs.db']
 
-
 def random_color(k=0):
-	RGB = int(255*sin(k)),int(255*cos(k)),int(255*(1-sin(k)))
+	RGB = int(k%255),int(255*cos(k)),int(255*(1-sin(k)))
 	return RGB
-
 def full_width(txt):
 	'''translate to unicode letters'''
 	WIDE_MAP = dict((i, i + 0xFEE0) for i in xrange(0x21, 0x7F))
 	WIDE_MAP[0x20] = 0x3000 
 	return unicode(txt).translate(WIDE_MAP)
-
 def draw_text(txt, image, k=0, x=0, y=30):
 	'''takes a image and places txt on it'''
 	print 'adding text:', txt.encode('utf-8')
@@ -59,7 +56,7 @@ def draw_text(txt, image, k=0, x=0, y=30):
 	# portion of image width you want text width to be
 	img_fraction = 0.50
 	font = ImageFont.truetype(font_path, fontsize)
-	while font.getsize(txt)[0] < img_fraction*image.size[0]*1.3:
+	while font.getsize(txt)[0] < img_fraction*image.size[0]*0.7:
 	    # iterate until the text size is just larger than the criteria
 	    fontsize += 1
 	    font = ImageFont.truetype(font_path, fontsize)
@@ -74,18 +71,14 @@ def draw_text(txt, image, k=0, x=0, y=30):
 	# draw.text((x, y+1), txt, font=font, fill=random_color(k+200))
 
 	# thicker border
-	draw.text((x-1, y-1), txt, font=font, fill=random_color(10*k+90))
-	draw.text((x+1, y-1), txt, font=font, fill=random_color(10*k+60))
-	draw.text((x-1, y+1), txt, font=font, fill=random_color(10*k+37))
-	draw.text((x+1, y+1), txt, font=font, fill=random_color(10*k+80))
+	draw.text((x-2, y-2), txt, font=font, fill=random_color(k+90))
+	draw.text((x+2, y-2), txt, font=font, fill=random_color(k+60))
+	draw.text((x-2, y+2), txt, font=font, fill=random_color(k+37))
+	draw.text((x+2, y+2), txt, font=font, fill=random_color(k+80))
 	#################
 
 
 	return image
-
-def saturation(im, k=3):
-	converter = ImageEnhance.Color(im)
-	return converter.enhance(k)
 
 def insert_bubble(foreground_path, im):
 	'''insert notification bubble on the bottom right corner'''
@@ -103,10 +96,13 @@ def insert_window_as_background(foreground_path, im,k=0):
 	foreground_size = foreground.size
 	ratio = float(foreground_size[0]) / float(foreground_size[1])
 	for i in range(500,600,1): # the step determines the distances between 
-		pos = (	int((background_size[0]-foreground_size[0])/2 + i*sin(i)/k) ,
-				int((background_size[1]-foreground_size[1])/2 + i*cos(i)/ratio/k)
+		pos = (	int((background_size[0]-foreground_size[0])/2 + i*sin(i)/sin(k)) ,
+				int((background_size[1]-foreground_size[1])/2 + i*cos(i)/ratio/cos(k))
 				)
-		im.paste(foreground, pos, foreground)
+		try:
+			im.paste(foreground, pos, foreground)
+		except ValueError:
+			im.paste(foreground, pos)
 	return im
 def insert_cascade(foreground_path, im, k=0, x=100,y=100):
 	'''another postironic function. raster box drawing'''
@@ -121,8 +117,7 @@ def insert_cascade(foreground_path, im, k=0, x=100,y=100):
 	for i in range(int(k*100)): # the step determines the distances between 
 		dy = v * i + 0.5 * acc * (i**2)
 		v = v + acc * i
-		print v
-		pos = (	int(x + 8* i) ,
+		pos = (	int(x +11* i) ,
 				int(y - dy)
 			)
 		im.paste(foreground, pos)
@@ -147,7 +142,7 @@ def insert_window_as_background2(foreground_path, im):
 def horizon(background_path, im):
 	'''stretch a picture for horizontal perspective. math is hard'''
 	background = Image.open(background_path)
-# WWWWWWWWWWWWTTTTTTTTTTTTTTTTTTTFFFFFFFFFFFFFFFFFFFFFFF MATH???? :-K
+		# WWWWWWWWWWWWTTTTTTTTTTTTTTTTTTTFFFFFFFFFFFFFFFFFFFFFFF MATH???? :-K
 	im.paste(background,(0,0))
 	return im
 def insert_pic(foreground_path, im, k=0, x=0, y=1000):
@@ -159,36 +154,59 @@ def insert_pic(foreground_path, im, k=0, x=0, y=1000):
 	background_size = im.size
 	foreground_size = foreground.size
 	ratio = float(foreground_size[0]) / float(foreground_size[1])
-	print ratio
 	pos = (	x ,
 			y
 			)
 	foreground = foreground.rotate(k*100)
 	im.paste(foreground, pos, foreground)
 	return im
-def draw(k=0):
-	'''non-ironic honest function'''
-	im = Image.new("RGBA", (1000,1000), random_color((100+20*k)))
+def color(im, k=3):
+	enhancer = ImageEnhance.Color(im)
+	return enhancer.enhance(k)
+def contrast(im, k=3):
+	enhancer = ImageEnhance.Contrast(im)
+	return enhancer.enhance(k)
+def sharpness(im, k=3):
+	enhancer = ImageEnhance.Sharpness(im)
+	return enhancer.enhance(k) 
+def brightness(im, k=3):
+	enhancer = ImageEnhance.Brightness(im)
+	return enhancer.enhance(k)
+def smooth(im, k=3):
+	return im.filter(ImageFilter.SMOOTH)
+
+
+
+def hashseed(seedtext):
+	return hashlib.sha224(seedtext).hexdigest()
+def draw_method1(k=0, name=""):
+	'''non-ironic function'''
+	seedvalue = hashseed(name)
+	x, y = size = (1000,1000)
+	im = Image.new("RGBA", size, random_color(k))
 	# im = horizon(choice(backgrounds),im)
-	im = insert_cascade(windows[-3],im, k)
-	im = insert_pic(pics[1],im,k=0,x=500,y=500)
-	im = insert_pic(pics[3],im,k=0,x=500,y=0)
-	im = insert_pic(greek[-3],im,k=0,x=100,y=350)
-	im = insert_window_as_background(pics[4],im, k)
-	im = insert_bubble(bubbles[4],im)
-	im = draw_text(japanese_corpus[0], im, k=500, y=500)
-	im = saturation(im, 4)
+	im = insert_cascade				(Random(seedvalue+str(0)).choice(windows)		,im, k)
+	im = insert_pic					(Random(seedvalue+str(1)).choice(pics)			,im,k=0,x=x/2,y=y/2)
+	im = insert_pic					(Random(seedvalue+str(3)).choice(pics)			,im,k=0,x=x/2,y=0)
+	im = insert_pic					(Random(seedvalue+str(3)).choice(greek)			,im,k=0,x=0,y=int(y/2.5+50))
+	im = insert_window_as_background(Random(seedvalue+str(7)).choice(pics)			,im, k=44)
+	im = insert_bubble				(Random(seedvalue+str(5)).choice(bubbles)		,im)
+	im = draw_text					(Random(seedvalue+str(6)).choice(japanese_corpus), im, k=500, y=y/2)
+	im = draw_text					(name, im, k=Random(seedvalue+str(13)).randint(100,500), x=50, y=y/2)
+	im = smooth				(im, Random(seedvalue+':)').randint(3,10))
+	im = color 				(im, Random(seedvalue).randint(3,10))
 	return im
 
 if __name__ == '__main__':
-	'''k is for nuanced transformations in functions'''
+	'''k is for nuanced transformations in individual functions'''
 	# for k in range(100,200):
-	# 	if k!= 2: continue
-	# 	print k
-	# 	im = draw(float(k)/100)
+	# 	# if k!= 2: continue
+	# 	print k, '------------'
+	# 	im = draw_method1(float(k)/100,'MOFO NIGGER')
 	# 	im.save('animated\\'+str(k)+'.png')
 
-############################################
+	############################################
 	k=95
-	im = draw(float(k)/100)
+	im = draw_method1(float(k)/100,name='REDDIT')
 	im.save('100.png')
+	print hashseed('VAPOR MONDAY')
