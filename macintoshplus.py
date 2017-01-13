@@ -52,7 +52,7 @@ def draw_text(txt, image, k=0, x=0, y=30):
 	draw = ImageDraw.Draw(image)
 
 	#autofit
-	fontsize = 1  # starting font size
+	fontsize = 10  # starting font size
 	# portion of image width you want text width to be
 	img_fraction = 0.50
 	font = ImageFont.truetype(font_path, fontsize)
@@ -196,17 +196,3 @@ def draw_method1(k=0, name=""):
 	im = smooth				(im, Random(seedvalue+':)').randint(3,10))
 	im = color 				(im, Random(seedvalue).randint(3,10))
 	return im
-
-if __name__ == '__main__':
-	'''k is for nuanced transformations in individual functions'''
-	# for k in range(100,200):
-	# 	# if k!= 2: continue
-	# 	print k, '------------'
-	# 	im = draw_method1(float(k)/100,'MOFO NIGGER')
-	# 	im.save('animated\\'+str(k)+'.png')
-
-	############################################
-	k=95
-	im = draw_method1(float(k)/100,name='REDDIT')
-	im.save('100.png')
-	print hashseed('VAPOR MONDAY')
