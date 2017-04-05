@@ -21,7 +21,8 @@ bgcolor = "#008080"
 im = Image.new("RGBA", (1000, 1000), bgcolor).convert("RGBA")
 win = Image.open(win_path).convert("RGBA")
 
-terrace_fname = macintoshplus.windows[7]
+random_picture = numpy.random.choice(macintoshplus.windows)
+terrace_fname = random_picture
 terrace = Image.open(terrace_fname).convert("RGBA")
 
 win = win.resize(map(lambda x: 3*x, win.size))
@@ -40,7 +41,7 @@ def persp(src, top, t):
 
             [(0, 0), (width, 0), (width, height), (0, height)])
 
-
+    print coeffs
     src = src.transform(src.size, Image.PERSPECTIVE, coeffs, Image.BICUBIC,fill=0)
     return src
 
@@ -87,7 +88,8 @@ for density in range(40, 45, 5):
     stack.reverse()
     for (i, out) in stack:
         im.paste(out,(i,20),out)
-    im = macintoshplus.insert_bubble(macintoshplus.bubbles[0], im)
+    random_bubble = numpy.random.choice(macintoshplus.bubbles)
+    im = macintoshplus.insert_bubble(random_bubble, im)
     fname = 'output/mac'+ str(density) +'.png'
 
     print fname
