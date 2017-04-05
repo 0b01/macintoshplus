@@ -3,7 +3,8 @@ from PIL import Image
 import numpy
 from random import Random
 
-win_path = Random("blah").choice(macintoshplus.windows)
+random_seed = "blah"
+win_path = Random(random_seed).choice(macintoshplus.windows)
 
 def find_coeffs(pa, pb):
     matrix = []
@@ -21,8 +22,8 @@ bgcolor = "#008080"
 im = Image.new("RGBA", (1000, 1000), bgcolor).convert("RGBA")
 win = Image.open(win_path).convert("RGBA")
 
-terrace_fname = macintoshplus.windows[7]
-terrace = Image.open(terrace_fname).convert("RGBA")
+random_window = Random(random_seed).choice(macintoshplus.windows)
+terrace = Image.open(random_window).convert("RGBA")
 
 win = win.resize(map(lambda x: 3*x, win.size))
 terrace = terrace.resize(map(lambda x: int(3*x), terrace.size))
@@ -39,7 +40,6 @@ def persp(src, top, t):
             (0+t, height)], #bottom left
 
             [(0, 0), (width, 0), (width, height), (0, height)])
-
 
     src = src.transform(src.size, Image.PERSPECTIVE, coeffs, Image.BICUBIC,fill=0)
     return src
@@ -87,7 +87,8 @@ for density in range(40, 45, 5):
     stack.reverse()
     for (i, out) in stack:
         im.paste(out,(i,20),out)
-    im = macintoshplus.insert_bubble(macintoshplus.bubbles[0], im)
+    random_bubble = Random(random_seed).choice(macintoshplus.bubbles)
+    im = macintoshplus.insert_bubble(random_bubble, im)
     fname = 'output/mac'+ str(density) +'.png'
 
     print fname
