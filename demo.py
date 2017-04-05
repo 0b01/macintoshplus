@@ -41,7 +41,6 @@ def persp(src, top, t):
 
             [(0, 0), (width, 0), (width, height), (0, height)])
 
-    print coeffs
     src = src.transform(src.size, Image.PERSPECTIVE, coeffs, Image.BICUBIC,fill=0)
     return src
 
