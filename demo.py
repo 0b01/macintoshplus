@@ -3,7 +3,8 @@ from PIL import Image
 import numpy
 from random import Random
 
-win_path = Random("blah").choice(macintoshplus.windows)
+random_seed = "blah"
+win_path = Random(random_seed).choice(macintoshplus.windows)
 
 def find_coeffs(pa, pb):
     matrix = []
@@ -21,7 +22,7 @@ bgcolor = "#008080"
 im = Image.new("RGBA", (1000, 1000), bgcolor).convert("RGBA")
 win = Image.open(win_path).convert("RGBA")
 
-random_window = numpy.random.choice(macintoshplus.windows)
+random_window = Random(random_seed).choice(macintoshplus.windows)
 terrace = Image.open(random_window).convert("RGBA")
 
 win = win.resize(map(lambda x: 3*x, win.size))
@@ -86,7 +87,7 @@ for density in range(40, 45, 5):
     stack.reverse()
     for (i, out) in stack:
         im.paste(out,(i,20),out)
-    random_bubble = numpy.random.choice(macintoshplus.bubbles)
+    random_bubble = Random(random_seed).choice(macintoshplus.bubbles)
     im = macintoshplus.insert_bubble(random_bubble, im)
     fname = 'output/mac'+ str(density) +'.png'
 
