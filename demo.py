@@ -21,9 +21,8 @@ bgcolor = "#008080"
 im = Image.new("RGBA", (1000, 1000), bgcolor).convert("RGBA")
 win = Image.open(win_path).convert("RGBA")
 
-random_picture = numpy.random.choice(macintoshplus.windows)
-terrace_fname = random_picture
-terrace = Image.open(terrace_fname).convert("RGBA")
+random_window = numpy.random.choice(macintoshplus.windows)
+terrace = Image.open(random_window).convert("RGBA")
 
 win = win.resize(map(lambda x: 3*x, win.size))
 terrace = terrace.resize(map(lambda x: int(3*x), terrace.size))
