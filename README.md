@@ -11,14 +11,13 @@ _This project uses python2 make sure you're not using python3._
 
 Install dependencies using:
 
-    `pip install -r requirements.txt`
+    pip install -r requirements.txt
 
 ## Usage
 
 Run demo which uses macintoshplus:
 
-    `python demo.py`
+    python demo.py
 
 ## Development
-I churned out the code within a 4 hour hack session last Sunday. No future development plan. The code is as-is
-
+I churned out the code within a 4 hour hack session last Sunday. No future development plan. The code is as-is.
